@@ -31,6 +31,9 @@
         <!-- Whether the Indicator overlay(s) should be used -->
         <attr name="ptrShowIndicator" format="reference|boolean" />
 
+        <!-- Drawable to use as the progress bar spinner -->
+        <attr name="ptrLoadingDrawable" format="reference" />
+
         <!-- Drawable to use as Loading Indicator. Changes both Header and Footer. -->
         <attr name="ptrDrawable" format="reference" />
 
@@ -53,6 +56,7 @@
         <attr name="ptrAnimationStyle">
             <flag name="rotate" value="0x0" />
             <flag name="flip" value="0x1" />
+            <flag name="image_flip" value="0x2" />
         </attr>
 
         <!-- Whether the user can scroll while the View is Refreshing -->

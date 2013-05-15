@@ -69,16 +69,8 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		mMode = mode;
 		mScrollDirection = scrollDirection;
 
-		switch (scrollDirection) {
-			case HORIZONTAL:
-				LayoutInflater.from(context).inflate(R.layout.pull_to_refresh_header_horizontal, this);
-				break;
-			case VERTICAL:
-			default:
-				LayoutInflater.from(context).inflate(R.layout.pull_to_refresh_header_vertical, this);
-				break;
-		}
-
+		LayoutInflater.from(context).inflate(pickLayout(scrollDirection), this);
+		
 		mInnerLayout = (FrameLayout) findViewById(R.id.fl_inner);
 		mHeaderText = (TextView) mInnerLayout.findViewById(R.id.pull_to_refresh_text);
 		mHeaderProgress = (ProgressBar) mInnerLayout.findViewById(R.id.pull_to_refresh_progress);
@@ -106,6 +98,13 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 				mRefreshingLabel = context.getString(R.string.pull_to_refresh_refreshing_label);
 				mReleaseLabel = context.getString(R.string.pull_to_refresh_release_label);
 				break;
+		}
+		
+		if (attrs.hasValue(R.styleable.PullToRefresh_ptrLoadingDrawable)) {
+			Drawable spinner = attrs.getDrawable(R.styleable.PullToRefresh_ptrLoadingDrawable);
+			if (null != spinner) {
+				mHeaderProgress.setIndeterminateDrawable(spinner);
+			}
 		}
 
 		if (attrs.hasValue(R.styleable.PullToRefresh_ptrHeaderBackground)) {
@@ -180,6 +179,21 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 		reset();
 	}
 
+	/**
+	 * Pick a layout to use
+	 * @param scrollDirection
+	 * @return
+	 */
+	protected int pickLayout(Orientation scrollDirection) {
+		switch (scrollDirection) {
+			case HORIZONTAL:
+				return R.layout.pull_to_refresh_header_horizontal;
+			case VERTICAL:
+			default:
+				return R.layout.pull_to_refresh_header_vertical;
+		}
+	}
+
 	public final void setHeight(int height) {
 		ViewGroup.LayoutParams lp = (ViewGroup.LayoutParams) getLayoutParams();
 		lp.height = height;
@@ -203,17 +217,22 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 	}
 
 	public final void hideAllViews() {
-		if (View.VISIBLE == mHeaderText.getVisibility()) {
-			mHeaderText.setVisibility(View.INVISIBLE);
-		}
-		if (View.VISIBLE == mHeaderProgress.getVisibility()) {
-			mHeaderProgress.setVisibility(View.INVISIBLE);
-		}
-		if (View.VISIBLE == mHeaderImage.getVisibility()) {
-			mHeaderImage.setVisibility(View.INVISIBLE);
-		}
-		if (View.VISIBLE == mSubHeaderText.getVisibility()) {
-			mSubHeaderText.setVisibility(View.INVISIBLE);
+		setVisibilitySafely(mHeaderText, 	 View.VISIBLE, View.INVISIBLE);
+		setVisibilitySafely(mHeaderProgress, View.VISIBLE, View.INVISIBLE);
+		setVisibilitySafely(mHeaderImage, 	 View.VISIBLE, View.INVISIBLE);
+		setVisibilitySafely(mSubHeaderText,  View.VISIBLE, View.INVISIBLE);
+	}
+	
+	/**
+	 * If the view exists and its visibility is "from," switch
+	 * 	it to "to"
+	 * @param v
+	 * @param from
+	 * @param to
+	 */
+	protected void setVisibilitySafely(View v, int from, int to) {
+		if (null != v && from == v.getVisibility()) {
+			v.setVisibility(to);
 		}
 	}
 
@@ -312,18 +331,10 @@ public abstract class LoadingLayout extends FrameLayout implements ILoadingLayou
 	}
 
 	public final void showInvisibleViews() {
-		if (View.INVISIBLE == mHeaderText.getVisibility()) {
-			mHeaderText.setVisibility(View.VISIBLE);
-		}
-		if (View.INVISIBLE == mHeaderProgress.getVisibility()) {
-			mHeaderProgress.setVisibility(View.VISIBLE);
-		}
-		if (View.INVISIBLE == mHeaderImage.getVisibility()) {
-			mHeaderImage.setVisibility(View.VISIBLE);
-		}
-		if (View.INVISIBLE == mSubHeaderText.getVisibility()) {
-			mSubHeaderText.setVisibility(View.VISIBLE);
-		}
+		setVisibilitySafely(mHeaderText, 	 View.INVISIBLE, View.VISIBLE);
+		setVisibilitySafely(mHeaderProgress, View.INVISIBLE, View.VISIBLE);
+		setVisibilitySafely(mHeaderImage, 	 View.INVISIBLE, View.VISIBLE);
+		setVisibilitySafely(mSubHeaderText,  View.INVISIBLE, View.VISIBLE);
 	}
 
 	/**
